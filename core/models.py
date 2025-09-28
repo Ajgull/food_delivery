@@ -2,18 +2,21 @@ from django.contrib.auth.models import User
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from core import consts
 
-class Customer(models.Model):
+
+class Profile(models.Model):
     first_name = models.CharField(verbose_name='name', blank=False, max_length=20)
     second_name = models.CharField(verbose_name='second_name', blank=False, max_length=20)
     date_of_registration = models.DateTimeField(verbose_name='date_of_registration', auto_now_add=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='user')
     email = models.EmailField(verbose_name='email', unique=True, blank=False, max_length=255)
     phone = PhoneNumberField(verbose_name='phone', unique=True, blank=False)
+    role = models.CharField(choices=consts.CHOISES, default='customer', max_length=15)
 
     class Meta:
-        verbose_name = 'customer'
-        verbose_name_plural = 'customers'
+        verbose_name = 'profile'
+        verbose_name_plural = 'profiles'
         ordering = ['user']
 
     def __str__(self) -> str:
@@ -52,7 +55,7 @@ class Dish(models.Model):
 class Comment(models.Model):
     text = models.TextField(verbose_name='text_of_comment', blank=False)
     written_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='author_of_order')
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='author_of_order')
 
     class Meta:
         verbose_name = 'comment'
@@ -64,7 +67,7 @@ class Comment(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='customer')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='customer')
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, verbose_name='restaurant')
     order_date = models.DateTimeField(verbose_name='date_of_order', auto_now_add=True)
     status = models.CharField(verbose_name='status', max_length=15)
@@ -80,14 +83,14 @@ class Order(models.Model):
 
 class Like(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='dish')
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='customer')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='customer')
     liked_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('dish', 'customer')
+        unique_together = ('dish', 'profile')
         verbose_name = 'like'
         verbose_name_plural = 'likes'
         ordering = ['-liked_at']
 
     def __str__(self) -> str:
-        return f'{self.customer.first_name} {self.customer.second_name} liked {self.dish.text[:100]}'
+        return f'{self.profile.first_name} {self.profile.second_name} liked {self.dish.text[:100]}'

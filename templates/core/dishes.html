@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Dishes{% endblock %}
+
+{% block content %}
+    <h1>Dishes</h1>
+
+    {% for dish in dishes %}
+    <div class="dish-card">
+        <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
+        <h3>{{ dish.name }}</h3>
+        <p>Price: {{ dish.price }}</p>
+        <p>{{ dish.description }}</p>
+    </div>
+    {% empty %}
+        <li>No dishes</li>
+    {% endfor %}
+{% endblock %}
