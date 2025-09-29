@@ -10,8 +10,8 @@ class Profile(models.Model):
     second_name = models.CharField(verbose_name='second_name', blank=False, max_length=20)
     date_of_registration = models.DateTimeField(verbose_name='date_of_registration', auto_now_add=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='user')
-    email = models.EmailField(verbose_name='email', unique=True, blank=False, max_length=255)
-    phone = PhoneNumberField(verbose_name='phone', unique=True, blank=False)
+    email = models.EmailField(verbose_name='email', blank=False, max_length=255)
+    phone = PhoneNumberField(verbose_name='phone', blank=False)
     role = models.CharField(choices=consts.CHOISES, default='customer', max_length=15)
 
     class Meta:

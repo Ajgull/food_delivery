@@ -1,2 +1,9 @@
+from django.contrib import admin
 
-# Register your models here.
+from core.models import Comment, Dish, Order, Profile, Restaurant
+
+admin.site.register(Profile)
+admin.site.register(Comment)
+admin.site.register(Dish)
+admin.site.register(Order)
+admin.site.register(Restaurant)

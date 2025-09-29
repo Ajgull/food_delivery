@@ -3,6 +3,12 @@
 {% block title %}Dishes{% endblock %}
 
 {% block content %}
+
+    <p>Please choose an option below:</p>
+    <div class="d-flex justify-content-center">
+        <a href="{% url 'register' %}" class="btn btn-primary mx-2">Create an Account</a>
+    </div>
+
     <h1>Dishes</h1>
 
     {% for dish in dishes %}
