@@ -3,10 +3,9 @@
 {% block title %}Dishes{% endblock %}
 
 {% block content %}
-
-    <p>Please choose an option below:</p>
-    <div class="d-flex justify-content-center">
-        <a href="{% url 'register' %}" class="btn btn-primary mx-2">Create an Account</a>
+    <div class="d-flex justify-content-center gap-3 my-3">
+        <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
+        <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
     </div>
 
     <h1>Dishes</h1>
