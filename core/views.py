@@ -1,10 +1,21 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect, render
-from django.views.generic import CreateView, ListView, View
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 
 from core.forms import UserLoginForm, UserRegistrationForm
 from core.models import Dish
+
+
+def get_user_groups(user: User) -> dict:
+    return {
+        'is_restaurant': user.groups.filter(name='Restaurant').exists(),
+        'is_customer': user.groups.filter(name='Customer').exists(),
+        'is_courier': user.groups.filter(name='Courier').exists(),
+    }
 
 
 class LogoutView(View):
@@ -20,12 +31,8 @@ class DishListView(ListView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        context['is_restaurant'] = self.request.user.groups.filter(name='Restaurant').exists()
-        context['is_customer'] = self.request.user.groups.filter(name='Customer').exists()
-        context['is_courier'] = self.request.user.groups.filter(name='Courier').exists()
-        print(context['is_restaurant'])
-        print(context['is_customer'])
-        print(context['is_courier'])
+        user_groups = get_user_groups(self.request.user)
+        context.update(user_groups)
         return context
 
 
@@ -63,5 +70,37 @@ class LoginView(View):
 
 class DishCreateView(CreateView):
     model = Dish
-    fields = ['name', 'price', 'dexcription', 'image']
+    fields = ['name', 'price', 'description', 'image']
     template_name = 'core/dish_create_rest.html'
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('home')
+
+
+class DishDetailView(DetailView):
+    model = Dish
+    template_name = 'core/dish_detail.html'
+    context_object_name = 'dish'
+
+
+class DishUpdateView(UpdateView):
+    model = Dish
+    template_name = 'core/dish_update.html'
+    fields = '__all__'
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('home')
+
+
+class DishDeleteView(DeleteView):
+    model = Dish
+    template_name = 'core/dish_delete.html'
+
+    def get_object(self) -> Dish:
+        return get_object_or_404(Dish, pk=self.kwargs.get('pk'))
+
+    def get_queryset(self) -> QuerySet[Dish]:
+        return Dish.objects.filter(dish=self.request.user)
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('home')

@@ -16,6 +16,7 @@
             {% else %}
                 Hi, user.first_name.
                 <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
+                <a href="{% url 'dish_create' %}" class="btn btn-outline-primary">Create dish</a>
             {% endif %}
         {% else %}
             <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
@@ -30,7 +31,7 @@
             <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
             <h3>{{ dish.name }}</h3>
             <p>Price: {{ dish.price }}</p>
-            <p>{{ dish.description }}</p>
+            <a href="{% url 'dish_detail' dish.pk %}" class="btn btn-outline-primary">{{dish.name}}</a>
         </div>
     {% empty %}
         <li>No dishes</li>
