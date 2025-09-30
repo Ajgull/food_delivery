@@ -6,7 +6,8 @@
 <h2>Registration</h2>
 <form method="post" novalidate>
     {% csrf_token %}
-    {{ user_form.as_p }}
+    {{ register_form.as_p }}
     <button type="submit">Register</button>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back to menu</a>
 </form>
 {% endblock %}

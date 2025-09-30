@@ -4,19 +4,34 @@
 
 {% block content %}
     <div class="d-flex justify-content-center gap-3 my-3">
-        <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
-        <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
+        {% if user.is_authenticated %}
+            {% if is_restaurant %}
+                <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
+            {% elif is_customer %}
+                <h2>Hi, {{ request.user.username }}</h2>
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
+            {% elif is_courier %}
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
+            {% else %}
+                Hi, user.first_name.
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
+        {% endif %}
     </div>
 
     <h1>Dishes</h1>
 
     {% for dish in dishes %}
-    <div class="dish-card">
-        <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
-        <h3>{{ dish.name }}</h3>
-        <p>Price: {{ dish.price }}</p>
-        <p>{{ dish.description }}</p>
-    </div>
+        <div class="dish-card">
+            <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
+            <h3>{{ dish.name }}</h3>
+            <p>Price: {{ dish.price }}</p>
+            <p>{{ dish.description }}</p>
+        </div>
     {% empty %}
         <li>No dishes</li>
     {% endfor %}
