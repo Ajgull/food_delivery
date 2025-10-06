@@ -14,10 +14,28 @@
             {% elif is_courier %}
                 <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
             {% else %}
-                Hi, user.first_name.
+                Hi, {{user.first_name}}.
                 <a href="{% url 'logout' %}" class="btn btn-outline-primary">Log out</a>
                 <a href="{% url 'dish_create' %}" class="btn btn-outline-primary">Create dish</a>
             {% endif %}
+                <div style="border: 1px solid #ccc; padding: 10px; width: 300px; text-align: left; position: fixed; top: 10px; right: 10px; background: #f8f9fa;">
+                    <strong>Cart ({{ cart_total_items|default:0 }} items)</strong>
+                    
+                    {% if cart_dishes %}
+                        <ul style="list-style: none; padding-left: 0;">
+                        {% for item in cart_dishes %}
+                            <li>
+                            {{ item.dish.name }} — {{ item.quantity }} шт. — {{ item.subtotal|floatformat:2 }} ₽
+                            </li>
+                        {% endfor %}
+                        </ul>
+                        <hr>
+                        <p><strong>Total: {{ cart_total_price|floatformat:2 }} ₽</strong></p>
+                    {% else %}
+                        <p>No items in cart</p>
+                    {% endif %}
+                    </div>
+
         {% else %}
             <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
             <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
@@ -31,9 +49,22 @@
             <img src="{{ dish.image.url }}" alt="{{ dish.name }}">
             <h3>{{ dish.name }}</h3>
             <p>Price: {{ dish.price }}</p>
-            <a href="{% url 'dish_detail' dish.pk %}" class="btn btn-outline-primary">{{dish.name}}</a>
+            <a href="{% url 'dish_detail' dish.pk %}" class="btn btn-outline-primary">more information</a>
+            <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-primary">update</a>
+            <a href="{% url 'dish_delete' dish.pk %}" class="btn btn-outline-primary">delete</a>
+            <form method="post" action="{% url 'add_to_cart' dish.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">Add to cart</button>
+            </form>
+
+            <form method="post" action="{% url 'remove_from_cart' dish.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-primary">Remove from cart</button>
+            </form>
+
         </div>
     {% empty %}
         <li>No dishes</li>
     {% endfor %}
+
 {% endblock %}

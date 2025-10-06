@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Comment create{% endblock %}
+
+{% block content %}
+<h2>Comment create</h2>
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <textarea name="text" required class="form-control" rows="4" placeholder="Write your comment here..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+<a href="{% url 'home' %}" class="btn btn-secondary">Cancel</a>
+{% endblock %}

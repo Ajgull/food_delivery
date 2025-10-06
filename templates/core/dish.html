@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Details of dish{% endblock %}
+
+{% block content %}
+    <h1>{{ dish.name }}</h1>
+    <p>Price: {{ dish.price }} rubls</p>
+
+    {% if dish.image %}
+        <img src="{{ dish.image.url }}" style="max-width: 300px; height: auto;">
+    {% else %}
+        <p>The image is not available.</p>
+    {% endif %}
+
+    <p>Description: {{dish.description}}</p>
+        
+    <a href="{% url 'comment_create' dish.pk %}" class="btn btn-outline-primary">Write comment</a>
+    <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-primary">Edit</a>
+    <a href="{% url 'dish_delete' dish.pk %}" class="btn btn-outline-primary">Delete</a>
+    <a href="{% url 'home' %}" class="btn btn-outline-primary">Back to menu</a>
+
+    <a href="{% url 'comment_create' dish.pk %}" class="btn btn-outline-primary">Write comment</a>
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <strong>{{ comment.author.username }}:</strong> {{ comment.text }}
+                <br>
+                <small>Posted on {{ comment.written_at }}</small>
+
+            </li>
+        {% empty %}
+            <li>No comments yet.</li>
+        {% endfor %}
+    </ul>
+
+
+    <script>
+        function ShowComments(postId) {
+            var commentsList = document.getElementById('comments-' + postId);
+            if (commentsList.style.display === "none") {
+                commentsList.style.display = "block";
+            } else {
+                commentsList.style.display = "none";
+            }
+        }
+    </script>
+{% endblock %}

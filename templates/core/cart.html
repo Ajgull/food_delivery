@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Cart{% endblock %}
+
+{% block content %}
+
+    {% if dishes%}
+
+        {% for item on dishes %}
+            <li>{{item.dish.name}} - {{item.quantity}}</li>
+        {% endfor %}
+        
+        <p> Total: {{total}}</p>
+
+        <a href="{% url 'create_order' %}" class="btn btn-outline-primary">Creste order</a>
+    
+    {% else %}
+        <p> Buscet is empty</p>
+    {% endif %}
+
+<a href="{% url 'home' %}" class="btn btn-outline-primary">Back to menu</a>
+{% endblock %}

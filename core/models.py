@@ -55,7 +55,8 @@ class Dish(models.Model):
 class Comment(models.Model):
     text = models.TextField(verbose_name='text_of_comment', blank=False)
     written_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='author_of_order')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='author_of_order')
+    dish = models.ForeignKey(Dish, null=True, on_delete=models.CASCADE, verbose_name='comment_of_dish')
 
     class Meta:
         verbose_name = 'comment'
@@ -83,7 +84,7 @@ class Order(models.Model):
 
 class Like(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='dish')
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='customer')
+    profile = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='customer')
     liked_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
