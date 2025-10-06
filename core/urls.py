@@ -5,14 +5,18 @@ from django.urls import path
 from core.views import (
     AddToCartView,
     CommentCreateView,
+    CommentDeleteView,
+    CommentUpdateView,
     DishCreateView,
     DishDeleteView,
     DishDetailView,
     DishListView,
     DishUpdateView,
+    LikeDishView,
     LoginView,
     RegisterView,
     RemoveFromCartView,
+    UnlikeDishView,
 )
 
 urlpatterns = [
@@ -28,4 +32,8 @@ urlpatterns = [
     path('cart/add/<int:pk>/', AddToCartView.as_view(), name='add_to_cart'),
     path('cart/remove/<int:pk>/', RemoveFromCartView.as_view(), name='remove_from_cart'),
     path('comment/create/<int:pk>', CommentCreateView.as_view(), name='comment_create'),
+    path('comment/update/<int:pk>/', CommentUpdateView.as_view(), name='comment_update'),
+    path('comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment_delete'),
+    path('dish/<int:pk>/like/', LikeDishView.as_view(), name='like_dish'),
+    path('dish/<int:pk>/unlike/', UnlikeDishView.as_view(), name='unlike_dish'),
 ]

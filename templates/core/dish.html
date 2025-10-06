@@ -21,6 +21,21 @@
 
     <a href="{% url 'comment_create' dish.pk %}" class="btn btn-outline-primary">Write comment</a>
 
+    {% if user_has_liked %}
+        <form action="{% url 'unlike_dish' pk=dish.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary">Unlike</button>
+        </form>
+    {% else %}
+        <form action="{% url 'like_dish' pk=dish.pk %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-primary">Like</button>
+        </form>
+    {% endif %}
+
+
+    <p>Likes: {{ dish.likes.count }}</p>
+
     <h2>Comments</h2>
     <ul>
         {% for comment in comments %}
@@ -28,22 +43,16 @@
                 <strong>{{ comment.author.username }}:</strong> {{ comment.text }}
                 <br>
                 <small>Posted on {{ comment.written_at }}</small>
-
+                {% if request.user == comment.author %}
+                    <div>
+                        <a href="{% url 'comment_update' comment.pk %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-danger">Delete</a>
+                    </div>
+                {% endif %}
             </li>
         {% empty %}
             <li>No comments yet.</li>
         {% endfor %}
     </ul>
 
-
-    <script>
-        function ShowComments(postId) {
-            var commentsList = document.getElementById('comments-' + postId);
-            if (commentsList.style.display === "none") {
-                commentsList.style.display = "block";
-            } else {
-                commentsList.style.display = "none";
-            }
-        }
-    </script>
 {% endblock %}

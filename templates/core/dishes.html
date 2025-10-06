@@ -62,6 +62,9 @@
                 <button type="submit" class="btn btn-outline-primary">Remove from cart</button>
             </form>
 
+            <p>Likes: {{ dish.likes.count }}</p>
+            <p>Comments: {{ dish.comments.count }}</p>
+
         </div>
     {% empty %}
         <li>No dishes</li>

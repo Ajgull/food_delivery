@@ -102,7 +102,7 @@ class DishDetailView(DetailView):
     def get_context_data(self, **kwargs: dict) -> dict:
         context = super().get_context_data(**kwargs)
         dish = self.object
-        # context['user_has_liked'] = Like.objects.filter(post=post, author=self.request.user).exists()
+        context['user_has_liked'] = Like.objects.filter(dish=dish, profile=self.request.user).exists()
         context['comments'] = Comment.objects.filter(dish=dish)
         return context
 
@@ -160,49 +160,44 @@ class CommentCreateView(CreateView):
         return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
 
 
-# class CommentUpdateView(UpdateView):
-#     model = Comment
-#     template_name = 'core/comment_update.html'
-#     fields = ['text']
-#     context_object_name = 'comment'
+class CommentUpdateView(UpdateView):
+    model = Comment
+    template_name = 'core/comment_update.html'
+    fields = ['text']
+    context_object_name = 'comment'
 
-#     def get_object(self) -> Comment:
-#         return get_object_or_404(Comment, pk=self.kwargs.get('pk'), author=self.request.user)
+    def get_object(self) -> Comment:
+        return get_object_or_404(Comment, pk=self.kwargs.get('pk'), author=self.request.user)
 
-#     def get_success_url(self) -> str:
-#         return reverse_lazy('posts')
-
-
-# class CommentDeleteView(DeleteView):
-#     model = Comment
-#     template_name = 'core/comment_delete.html'
-
-#     def get_object(self) -> Comment:
-#         return get_object_or_404(Comment, pk=self.kwargs.get('pk'), author=self.request.user)
-
-#     def get_success_url(self) -> str:
-#         return reverse_lazy('posts')
+    def get_success_url(self) -> str:
+        return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
 
 
-# class CommentListView(ListView):
-#     model = Comment
-#     template_name = 'core/comments.html'
-#     context_object_name = 'comments'
+class CommentDeleteView(DeleteView):
+    model = Comment
+    template_name = 'core/comment_delete.html'
 
-#     def get_queryset(self) -> QuerySet[Comment]:
-#         post_id = self.kwargs.get('post_id')
-#         post = get_object_or_404(Post, id=post_id)
-#         return Comment.objects.filter(post=post)
+    def get_object(self) -> Comment:
+        return get_object_or_404(Comment, pk=self.kwargs.get('pk'), author=self.request.user)
 
-#     def get_context_data(self, **kwargs: dict) -> dict:
-#         context = super().get_context_data(**kwargs)
-#         post_id = self.kwargs.get('post_id')
-#         context['post'] = get_object_or_404(Post, id=post_id)
-#         return context
+    def get_context_data(self, **kwargs: str) -> dict:
+        context = super().get_context_data(**kwargs)
+        context['dish'] = self.object.dish
+        return context
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
 
 
-# class LikePostView(View):
-#     def post(self, request: HttpRequest, post_id: int) -> HttpResponse:
-#         post = get_object_or_404(Post, id=post_id)
-#         Like.objects.get_or_create(post=post, author=request.user)
-#         return redirect('post_detail', pk=post.id)
+class LikeDishView(View):
+    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
+        dish = get_object_or_404(Dish, id=pk)
+        Like.objects.get_or_create(dish=dish, profile=request.user)
+        return redirect('dish_detail', pk=dish.pk)
+
+
+class UnlikeDishView(View):
+    def post(self, request: HttpRequest, pk: int) -> HttpResponse:
+        dish = get_object_or_404(Dish, id=pk)
+        Like.objects.filter(dish=dish, profile=request.user).delete()
+        return redirect('dish_detail', pk=dish.pk)
