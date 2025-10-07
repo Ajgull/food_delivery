@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'phonenumber_field',
     'bootstrap5',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

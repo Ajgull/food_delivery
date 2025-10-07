@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
 from django.urls import path
@@ -36,4 +38,4 @@ urlpatterns = [
     path('comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment_delete'),
     path('dish/<int:pk>/like/', LikeDishView.as_view(), name='like_dish'),
     path('dish/<int:pk>/unlike/', UnlikeDishView.as_view(), name='unlike_dish'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -42,6 +42,7 @@ class Dish(models.Model):
     description = models.CharField(verbose_name='dish_description', blank=False, max_length=255)
     price = models.DecimalField(verbose_name='price', max_digits=5, decimal_places=2, blank=False)
     image = models.ImageField(verbose_name='dish_image', upload_to='media/', blank=False)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='dishes', null=True, blank=True)
 
     class Meta:
         verbose_name = 'dish'
@@ -82,6 +83,19 @@ class Order(models.Model):
 
     def __str__(self) -> str:
         return f'The order {self.id} from {self.restaurant} has status {self.status}'
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name='order')
+    dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='dish')
+    quantity = models.PositiveIntegerField(verbose_name='quantity', default=1)
+
+    class Meta:
+        verbose_name = 'order item'
+        verbose_name_plural = 'order items'
+
+    def __str__(self) -> str:
+        return f'{self.quantity} x {self.dish.name} (Order #{self.order.id})'
 
 
 class Like(models.Model):

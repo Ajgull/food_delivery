@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
+
+# from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
 from django.forms import Form
@@ -6,18 +8,32 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+from django_filters.views import FilterView
 
 from core.cart import Cart
+from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
-from core.models import Comment, Dish, Like, Order, Profile
+from core.models import Comment, Dish, Like, Order, OrderItem, Profile
 
+# @login_required
+# def create_order(request: HttpRequest) -> HttpResponse:
+#     profile = Profile.objects.get(user=request.user)
 
-def get_user_groups(user: User) -> dict:
-    return {
-        'is_restaurant': user.groups.filter(name='Restaurant').exists(),
-        'is_customer': user.groups.filter(name='Customer').exists(),
-        'is_courier': user.groups.filter(name='Courier').exists(),
-    }
+#     cart = request.session.get('cart', {})
+#     if cart:
+#         first_dish_id = next(iter(cart))
+#         first_dish = Dish.objects.get(id=first_dish_id)
+#         restaurant = first_dish.restaurant
+
+#         order = Order.objects.create(profile=profile, restaurant=restaurant, status='Pending')
+
+#         for dish_id, quantity in cart.items():
+#             dish = Dish.objects.get(id=dish_id)
+#             OrderItem.objects.create(order=order, dish=dish, quantity=quantity)
+
+#         del request.session['cart']
+
+#     return redirect('home')
 
 
 class LogoutView(View):
@@ -26,16 +42,11 @@ class LogoutView(View):
         return redirect('home')
 
 
-class DishListView(ListView):
+class DishListView(FilterView):
     model = Dish
     template_name = 'core/dishes.html'
     context_object_name = 'dishes'
-
-    # def get_context_data(self, **kwargs: str) -> dict:
-    #     context = super().get_context_data(**kwargs)
-    #     user_groups = get_user_groups(self.request.user)
-    #     context.update(user_groups)
-    #     return context
+    filterset_class = DishFilter
 
     def get_context_data(self, **kwargs: str) -> HttpResponse:
         context = super().get_context_data(**kwargs)
