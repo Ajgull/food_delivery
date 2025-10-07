@@ -1,7 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
-
-# from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.db.models import QuerySet
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -15,25 +13,27 @@ from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
 from core.models import Comment, Dish, Like, Order, OrderItem, Profile
 
-# @login_required
-# def create_order(request: HttpRequest) -> HttpResponse:
-#     profile = Profile.objects.get(user=request.user)
 
-#     cart = request.session.get('cart', {})
-#     if cart:
-#         first_dish_id = next(iter(cart))
-#         first_dish = Dish.objects.get(id=first_dish_id)
-#         restaurant = first_dish.restaurant
+@login_required
+def create_order(request: HttpRequest) -> HttpResponse:
+    profile = Profile.objects.get(user=request.user)
 
-#         order = Order.objects.create(profile=profile, restaurant=restaurant, status='Pending')
+    cart = request.session.get('cart', {})
+    if cart:
+        first_dish_id = next(iter(cart))
+        first_dish = Dish.objects.get(id=first_dish_id)
+        restaurant = first_dish.restaurant
 
-#         for dish_id, quantity in cart.items():
-#             dish = Dish.objects.get(id=dish_id)
-#             OrderItem.objects.create(order=order, dish=dish, quantity=quantity)
+        order = Order.objects.create(profile=profile, restaurant=restaurant, status='Pending')
 
-#         del request.session['cart']
+        for dish_id, quantity in cart.items():
+            dish = Dish.objects.get(id=dish_id)
+            OrderItem.objects.create(order=order, dish=dish, quantity=quantity)
 
-#     return redirect('home')
+        del request.session['cart']
+        print(order)
+
+    return redirect('home')
 
 
 class LogoutView(View):

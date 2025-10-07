@@ -19,6 +19,7 @@ from core.views import (
     RegisterView,
     RemoveFromCartView,
     UnlikeDishView,
+    create_order,
 )
 
 urlpatterns = [
@@ -38,4 +39,5 @@ urlpatterns = [
     path('comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment_delete'),
     path('dish/<int:pk>/like/', LikeDishView.as_view(), name='like_dish'),
     path('dish/<int:pk>/unlike/', UnlikeDishView.as_view(), name='unlike_dish'),
+    path('order/', create_order, name='order'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,81 +3,100 @@
 {% block title %}Dishes{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-<div class="mb-3 mb-md-0 d-flex gap-2">
-        {% if user.is_authenticated %}
-            {% if is_restaurant %}
-                <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
-                <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
-            {% elif is_customer %}
-                <h2 class="h5 mb-0">Hi, {{ request.user.username }}</h2>
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-primary">Log out</button>
-                </form>
-            {% elif is_courier %}
-                <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-primary">Log out</button>
-                </form>
-            {% else %}
-                <div class="d-flex align-items-center gap-2">
-                <span>Hi, {{ user.first_name }}</span>
-                    <form method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-primary btn-sm">Log out</button>
-                    </form>
-                </div>
-                <a href="{% url 'dish_create' %}" class="btn btn-outline-primary">Create dish</a>
-            {% endif %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <h4>Filter Dishes</h4>
+        <form method="get" class="mb-3">
+            {% csrf_token %}
+            {{ filter.form.as_p }}
+            <button type="submit" class="btn btn-primary w-100">Find</button>
+        </form>
     </div>
-    <div class="bg-light border rounded p-3 position-fixed top-3 end-3" style="width: 300px; z-index: 1050;">
-        <h5 class="mb-3">Cart ({{ cart_total_items|default:0 }} items)</h5>
-        {% if cart_dishes %}
-            <ul class="list-unstyled mb-3" style="max-height: 200px; overflow-y: auto;">
-                {% for item in cart_dishes %}
-                    <li class="mb-2">
-                        <strong>{{ item.dish.name }}</strong> x{{ item.quantity }}<br>
-                        <small class="text-muted">{{ item.subtotal|floatformat:2 }} ₽</small>
-                    </li>
-                {% endfor %}
-            </ul>
-        <hr>
-            <p class="mb-0"><strong>Total: {{ cart_total_price|floatformat:2 }} ₽</strong></p>
-        {% else %}
-            <p class="mb-0">No items in cart</p>
-        {% endif %}
-    </div>
-</div>
-
-<h1 class="mb-4">Dishes</h1>
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for dish in dishes %}
-    <div class="col">
-        <div class="dish-card h-100 d-flex flex-column">
-            <img src="{{ dish.image.url }}" alt="{{ dish.name }}" class="mb-3">
-            <h5 class="card-title">{{ dish.name }}</h5>
-            <p class="mb-2"><strong>Price:</strong> {{ dish.price }}</p>
-            <div class="mt-auto d-flex gap-2 flex-wrap">
-                <a href="{% url 'dish_detail' dish.pk %}" class="btn btn-outline-primary btn-sm flex-fill">More info</a>
-                <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-secondary btn-sm flex-fill">Update</a>
-                <form method="post" action="{% url 'add_to_cart' dish.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-success btn-sm flex-fill">Add to cart</button>
-                </form>
-                <form method="post" action="{% url 'remove_from_cart' dish.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger btn-sm flex-fill">Remove from cart</button>
-                </form>
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex gap-2 align-items-center">
+                {% if user.is_authenticated %}
+                    {% if is_restaurant %}
+                        <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
+                    {% elif is_customer %}
+                        <h2 class="h5 mb-0">Hi, {{ request.user.username }}</h2>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-primary">Log out</button>
+                        </form>
+                    {% elif is_courier %}
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-primary">Log out</button>
+                        </form>
+                    {% else %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span>Hi, {{ user.first_name }}</span>
+                            <form method="post" action="{% url 'logout' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Log out</button>
+                            </form>
+                        </div>
+                        <a href="{% url 'dish_create' %}" class="btn btn-outline-primary">Create dish</a>
+                    {% endif %}
+                {% else %}
+                        <a href="{% url 'register' %}" class="btn btn-primary">Create an Account</a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary">Log in</a>
+                {% endif %}
             </div>
-            <div class="mt-3">
-                <p class="mb-1">Likes: {{ dish.likes.count }}</p>
-                <p class="mb-0">Comments: {{ dish.comments.count }}</p>
+            <div class="bg-light border rounded p-3" style="width: 300px;">
+                <h5 class="mb-3">Cart ({{ cart_total_items|default:0 }} items)</h5>
+                {% if cart_dishes %}
+                    <ul class="list-unstyled mb-3" style="max-height: 200px; overflow-y: auto;">
+                        {% for item in cart_dishes %}
+                            <li class="mb-2">
+                                <strong>{{ item.dish.name }}</strong> x{{ item.quantity }}<br>
+                                <small class="text-muted">{{ item.subtotal|floatformat:2 }} ₽</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                {% endif %}
+                <p class="mb-0"><strong>Total: {{ cart_total_price|floatformat:2 }} ₽</strong></p>
+
+                <form method="post" action="{% url 'order' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary">Create order</button>
+                </form>
             </div>
         </div>
+
+        <h1 class="mb-4">Dishes</h1>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for dish in dishes %}
+                <div class="col">
+                    <div class="dish-card h-100 d-flex flex-column">
+                        <img src="{{ dish.image.url }}" alt="{{ dish.name }}" class="mb-3">
+                        <h5 class="card-title">{{ dish.name }}</h5>
+                        <p class="mb-2"><strong>Price:</strong> {{ dish.price }}</p>
+                        <div class="mt-auto d-flex gap-2 flex-wrap">
+                            <a href="{% url 'dish_detail' dish.pk %}" class="btn btn-outline-primary btn-sm flex-fill">More info</a>
+                            <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-secondary btn-sm flex-fill">Update</a>
+                            <form method="post" action="{% url 'add_to_cart' dish.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-success btn-sm flex-fill">Add to cart</button>
+                            </form>
+                            <form method="post" action="{% url 'remove_from_cart' dish.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm flex-fill">Remove from cart</button>
+                            </form>
+                        </div>
+                        <div class="mt-3">
+                            <p class="mb-1">Likes: {{ dish.likes.count }}</p>
+                            <p class="mb-0">Comments: {{ dish.comments.count }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No dishes available.</p>
+            {% endfor %}
+        </div>
     </div>
-    {% empty %}
-     <p>No dishes available.</p>
-    {% endfor %}
 </div>
 {% endblock %}

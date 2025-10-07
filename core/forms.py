@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
 from phonenumber_field.formfields import PhoneNumberField
 
 from core import consts
@@ -42,14 +42,6 @@ class UserRegistrationForm(forms.ModelForm):
         user = super().save(commit)
         user.set_password(self.cleaned_data['password1'])
         if commit:
-            role = self.cleaned_data['role']
-            if role == 'Restaurant':
-                group = Group.objects.get(name='Restaurant')
-            elif role == 'Customer':
-                group = Group.objects.get(name='Customer')
-            elif role == 'Courier':
-                group = Group.objects.get(name='Courier')
-            user.groups.add(group)
             user.save()
             Profile.objects.create(
                 user=user,
@@ -78,6 +70,7 @@ class UserLoginForm(forms.Form):
 
         if username and password:
             user = authenticate(username=username, password=password)
+            print(user)
             if user is None:
                 raise forms.ValidationError('Invalid username or password.')
 

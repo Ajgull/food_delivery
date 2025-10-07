@@ -27,6 +27,7 @@ class Restaurant(models.Model):
     name = models.TextField(verbose_name='restaurant', blank=False, max_length=20)
     address = models.TextField(verbose_name='address', blank=False, max_length=50)
     description = models.TextField(verbose_name='restaurant_description', blank=False, max_length=255)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, verbose_name='customer')
 
     class Meta:
         verbose_name = 'restaurant'
