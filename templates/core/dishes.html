@@ -99,4 +99,64 @@
         </div>
     </div>
 </div>
+
+<div id="support-chat" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 320px;
+    height: 400px;
+    border: 1px solid #ccc;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 10px;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+">
+    <h5 style="margin-top: 0; margin-bottom: 10px;">Техподдержка</h5>
+    <div id="chat-log" style="flex-grow: 1; overflow-y: auto; border:1px solid #ddd; padding: 5px; font-size: 14px; margin-bottom: 10px;"></div>
+    <div style="display: flex; gap: 5px;">
+        <input id="chat-message-input" type="text" style="flex-grow: 1; padding: 5px;" placeholder="Введите сообщение...">
+        <button id="chat-message-send" class="btn btn-primary" style="flex-shrink: 0;">Отправить</button>
+    </div>
+</div>
+
+<script>
+    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/support/');
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.getElementById('chat-log');
+        chatLog.innerHTML += '<div><b>Support:</b> ' + data.message + '</div>';
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('WebSocket закрыт');
+        const chatLog = document.getElementById('chat-log');
+        chatLog.innerHTML += '<div style="color: red;"><em>Связь с техподдержкой потеряна.</em></div>';
+    };
+
+    document.getElementById('chat-message-send').onclick = function() {
+        const input = document.getElementById('chat-message-input');
+        if (input.value.trim() !== '') {
+            chatSocket.send(JSON.stringify({'message': input.value}));
+            const chatLog = document.getElementById('chat-log');
+            chatLog.innerHTML += '<div><b>You:</b> ' + input.value + '</div>';
+            chatLog.scrollTop = chatLog.scrollHeight;
+            input.value = '';
+            input.focus();
+        }
+    };
+
+    document.getElementById('chat-message-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('chat-message-send').click();
+        }
+    });
+</script>
+
 {% endblock %}
