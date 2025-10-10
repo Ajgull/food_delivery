@@ -15,11 +15,11 @@
     <p>Description: {{dish.description}}</p>
         
     <a href="{% url 'comment_create' dish.pk %}" class="btn btn-outline-primary">Write comment</a>
-    <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-primary">Edit</a>
-    <a href="{% url 'dish_delete' dish.pk %}" class="btn btn-outline-primary">Delete</a>
+    {% if request.user.profile.role == 'restaurant' %}
+        <a href="{% url 'dish_update' dish.pk %}" class="btn btn-outline-primary">Edit</a>
+        <a href="{% url 'dish_delete' dish.pk %}" class="btn btn-outline-primary">Delete</a>
+    {% endif %}
     <a href="{% url 'home' %}" class="btn btn-outline-primary">Back to menu</a>
-
-    <a href="{% url 'comment_create' dish.pk %}" class="btn btn-outline-primary">Write comment</a>
 
     {% if user_has_liked %}
         <form action="{% url 'unlike_dish' pk=dish.pk %}" method="post" style="display:inline;">

@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import QuerySet
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
@@ -72,7 +73,20 @@ class RegisterView(View):
     def post(self, request: HttpRequest) -> HttpResponse:
         register_form = UserRegistrationForm(request.POST)
         if register_form.is_valid():
-            register_form.save()
+            user = register_form.save()
+            profile = user.profile
+
+            if profile.role == 'restaurant':
+                restaurant_name = request.POST.get('restaurant_name')
+                address = request.POST.get('address')
+                description = request.POST.get('restaurant_description')
+
+                if restaurant_name and address and description:
+                    from .models import Restaurant
+
+                    Restaurant.objects.create(
+                        profile=profile, name=restaurant_name, address=address, description=description
+                    )
             return render(request, 'core/dishes.html', {'register_form': register_form})
         return render(request, 'core/register.html', {'register_form': register_form})
 
@@ -96,10 +110,13 @@ class LoginView(View):
         return render(request, 'core/login.html', {'login_form': login_form})
 
 
-class DishCreateView(CreateView):
+class DishCreateView(UserPassesTestMixin, CreateView):
     model = Dish
     fields = ['name', 'price', 'description', 'image']
     template_name = 'core/dish_create_rest.html'
+
+    def test_func(self) -> bool:
+        return self.request.user.profile.role == 'restaurant'
 
     def get_success_url(self) -> str:
         return reverse_lazy('home')
@@ -118,18 +135,24 @@ class DishDetailView(DetailView):
         return context
 
 
-class DishUpdateView(UpdateView):
+class DishUpdateView(UserPassesTestMixin, UpdateView):
     model = Dish
     template_name = 'core/dish_update.html'
     fields = '__all__'
+
+    def test_func(self) -> bool:
+        return self.request.user.profile.role == 'restaurant'
 
     def get_success_url(self) -> str:
         return reverse_lazy('home')
 
 
-class DishDeleteView(DeleteView):
+class DishDeleteView(UserPassesTestMixin, DeleteView):
     model = Dish
     template_name = 'core/dish_delete.html'
+
+    def test_func(self) -> bool:
+        return self.request.user.profile.role == 'restaurant'
 
     def get_object(self) -> Dish:
         return get_object_or_404(Dish, pk=self.kwargs.get('pk'))

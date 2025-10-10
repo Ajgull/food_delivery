@@ -1,13 +1,115 @@
 {% extends 'base.html' %}
-
 {% block title %}User Registration{% endblock %}
 
 {% block content %}
+<style>
+    form {
+        max-width: 400px;       /* ограничиваем ширину формы */
+        margin-left: 0;         /* прижать к левому краю */
+        margin-right: auto;     /* отступ справа автоматически */
+    }
+    .form-group {
+        display: block;
+        margin-bottom: 15px;
+    }
+    /* Метки и поля располагаем в столбец с узкой шириной */
+    .form-group label,
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;       /* не расширять ширину больше родителя */
+        margin-top: 5px;
+        box-sizing: border-box; /* учитываем паддинг и границы */
+    }
+</style>
+
+
 <h2>Registration</h2>
 <form method="post" novalidate>
     {% csrf_token %}
-    {{ register_form.as_p }}
+
+    <div class="form-group">
+        {{ register_form.username.label_tag }}
+        {{ register_form.username }}
+    </div>
+
+    <div class="form-group">
+        {{ register_form.first_name.label_tag }}
+        {{ register_form.first_name }}
+    </div>
+
+    <div class="form-group">
+        {{ register_form.last_name.label_tag }}
+        {{ register_form.last_name }}
+    </div>
+
+    <div class="form-group">
+        {{ register_form.password1.label_tag }}
+        {{ register_form.password1 }}
+        <small>{{ register_form.password1.help_text }}</small>
+    </div>
+
+    <div class="form-group">
+        {{ register_form.password2.label_tag }}
+        {{ register_form.password2 }}
+        <small>{{ register_form.password2.help_text }}</small>
+    </div>
+
+    <div class="form-group">
+        {{ register_form.role.label_tag }}
+        {{ register_form.role }}
+        <small>{{ register_form.role.help_text }}</small>
+    </div>
+
+    <div class="form-group">
+        {{ register_form.phone.label_tag }}
+        {{ register_form.phone }}
+    </div>
+
+    <div class="form-group">
+        {{ register_form.email.label_tag }}
+        {{ register_form.email }}
+        <small>{{ register_form.email.help_text }}</small>
+    </div>
+
+    <div id="restaurant_fields" style="display:none;">
+        <div class="form-group">
+            <label for="restaurant_name">Название ресторана</label>
+            <input type="text" name="restaurant_name" id="restaurant_name">
+        </div>
+
+        <div class="form-group">
+            <label for="address">Адрес ресторана</label>
+            <input type="text" name="address" id="address">
+        </div>
+
+        <div class="form-group">
+            <label for="restaurant_description">Описание ресторана</label>
+            <input type="text" name="restaurant_description" id="restaurant_description">
+        </div>
+    </div>
+
     <button type="submit">Register</button>
     <a href="{% url 'home' %}" class="btn btn-secondary">Back to menu</a>
 </form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('id_role');
+    const restaurantFields = document.getElementById('restaurant_fields');
+
+    function toggleRestaurantFields() {
+        if(roleSelect.value === 'restaurant') {
+            restaurantFields.style.display = 'block';
+        } else {
+            restaurantFields.style.display = 'none';
+        }
+    }
+
+    roleSelect.addEventListener('change', toggleRestaurantFields);
+    toggleRestaurantFields();
+});
+</script>
 {% endblock %}
