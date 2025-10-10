@@ -13,6 +13,7 @@ from core.cart import Cart
 from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
 from core.models import Comment, Dish, Like, Order, OrderItem, Profile, Restaurant
+from core.tasks import email_send
 
 
 @login_required
@@ -33,6 +34,21 @@ def create_order(request: HttpRequest) -> HttpResponse:
 
         del request.session['cart']
         print(order)
+
+        customer_email = profile.email
+
+        subject = f'New Order #{order.id} Created'
+
+        order_items = OrderItem.objects.filter(order=order)
+        items_list = '\n'.join([f'{item.dish.name} x{item.quantity}' for item in order_items])
+
+        message = (
+            f'Hello {profile.first_name}, your order #{order.id} has been received.\n\n'
+            f'Order items:\n{items_list}\n\n'
+            'Thank you for your purchase!'
+        )
+
+        email_send.delay(subject, message, [customer_email])
 
     return redirect('home')
 
