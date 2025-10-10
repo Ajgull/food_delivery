@@ -51,7 +51,7 @@ class Dish(models.Model):
         ordering = ['name']
 
     def __str__(self) -> str:
-        return f'Dish {self.name}, price - {self.price}, description - {self.description[:100]}'
+        return f'Dish {self.name}, price - {self.price}, description - {self.description[:100]}, restaurant - {self.restaurant}'
 
 
 class Comment(models.Model):

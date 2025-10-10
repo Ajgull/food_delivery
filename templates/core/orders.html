@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<h1>My Orders</h1>
+
+{% if orders %}
+    <ul>
+    {% for order in orders %}
+        <li>
+            <strong>Order #{{ order.id }}</strong><br>
+            Restaurant: {{ order.restaurant.name }}<br>
+            Status: {{ order.status }}<br>
+            Items:
+            <ul>
+                {% for item in order.orderitem_set.all %}
+                    <li>{{ item.dish.name }} x{{ item.quantity }}</li>
+                {% endfor %}
+            </ul>
+            Created at: {{ order.order_date|date:"Y-m-d H:i" }}
+        </li>
+    {% endfor %}
+
+    <a href="{% url 'home' %}" class="btn btn-outline-primary">Back to menu</a>
+    </ul>
+
+{% else %}
+    <p>You have no orders yet.</p>
+{% endif %}
+
+{% endblock %}

@@ -12,7 +12,7 @@ from django_filters.views import FilterView
 from core.cart import Cart
 from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
-from core.models import Comment, Dish, Like, Order, OrderItem, Profile
+from core.models import Comment, Dish, Like, Order, OrderItem, Profile, Restaurant
 
 
 @login_required
@@ -118,6 +118,16 @@ class DishCreateView(UserPassesTestMixin, CreateView):
     def test_func(self) -> bool:
         return self.request.user.profile.role == 'restaurant'
 
+    def form_valid(self, form: Form) -> Form:
+        profile = self.request.user.profile
+
+        restaurant = Restaurant.objects.filter(profile=profile).first()
+        if not restaurant:
+            return self.form_invalid(form)
+
+        form.instance.restaurant = restaurant
+        return super().form_valid(form)
+
     def get_success_url(self) -> str:
         return reverse_lazy('home')
 
@@ -132,6 +142,9 @@ class DishDetailView(DetailView):
         dish = self.object
         context['user_has_liked'] = Like.objects.filter(dish=dish, profile=self.request.user).exists()
         context['comments'] = Comment.objects.filter(dish=dish)
+        context['restaurant'] = dish.restaurant
+        print(f'Dish: {dish.name}, Restaurant: {dish.restaurant}')
+
         return context
 
 
@@ -221,6 +234,15 @@ class CommentDeleteView(DeleteView):
 
     def get_success_url(self) -> str:
         return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'core/orders.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self) -> QuerySet[Order]:
+        return Order.objects.filter(profile__user=self.request.user).order_by('order_date')
 
 
 class LikeDishView(View):

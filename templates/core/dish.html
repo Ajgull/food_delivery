@@ -5,6 +5,9 @@
 {% block content %}
     <h1>{{ dish.name }}</h1>
     <p>Price: {{ dish.price }} rubls</p>
+    <p>Restaurant name: {{ restaurant.name }}</p>
+    <p>Address: {{ restaurant.address }}</p>
+    <p>Description: {{ restaurant.description }}</p>
 
     {% if dish.image %}
         <img src="{{ dish.image.url }}" style="max-width: 300px; height: auto;">

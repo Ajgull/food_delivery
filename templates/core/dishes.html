@@ -22,6 +22,7 @@
 
                     {% elif request.user.profile.role == 'customer' %}
                         <h2 class="h5 mb-0">Hi, customer {{ request.user.username }}</h2>
+                        <a href="{% url 'order_list' %}" class="btn btn-outline-primary"> History of orders</a>
 
 
                     {% elif request.user.profile.role == 'courier' %}
@@ -75,7 +76,7 @@
         </div>
 
         <h1 class="mb-4">Dishes</h1>
-        <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
             {% for dish in dishes %}
                 <div class="col">
                     <div class="dish-card h-100 d-flex flex-column">
@@ -112,7 +113,7 @@
     bottom: 20px;
     right: 20px;
     width: 320px;
-    height: 400px;
+    height: 240px;
     border: 1px solid #ccc;
     background: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
@@ -122,11 +123,11 @@
     flex-direction: column;
     font-family: Arial, sans-serif;
 ">
-    <h5 style="margin-top: 0; margin-bottom: 10px;">Техподдержка</h5>
+    <h5 style="margin-top: 0; margin-bottom: 10px;">Support</h5>
     <div id="chat-log" style="flex-grow: 1; overflow-y: auto; border:1px solid #ddd; padding: 5px; font-size: 14px; margin-bottom: 10px;"></div>
     <div style="display: flex; gap: 5px;">
-        <input id="chat-message-input" type="text" style="flex-grow: 1; padding: 5px;" placeholder="Введите сообщение...">
-        <button id="chat-message-send" class="btn btn-primary" style="flex-shrink: 0;">Отправить</button>
+        <input id="chat-message-input" type="text" style="flex-grow: 1; padding: 5px;" placeholder="Type message...">
+        <button id="chat-message-send" class="btn btn-primary" style="flex-shrink: 0;">Send</button>
     </div>
 </div>
 

@@ -16,6 +16,7 @@ from core.views import (
     DishUpdateView,
     LikeDishView,
     LoginView,
+    OrderListView,
     RegisterView,
     RemoveFromCartView,
     UnlikeDishView,
@@ -40,4 +41,5 @@ urlpatterns = [
     path('dish/<int:pk>/like/', LikeDishView.as_view(), name='like_dish'),
     path('dish/<int:pk>/unlike/', UnlikeDishView.as_view(), name='unlike_dish'),
     path('order/', create_order, name='order'),
+    path('order/detail/', OrderListView.as_view(), name='order_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
