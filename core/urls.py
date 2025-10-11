@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.views import LogoutView
-from django.urls import include, path
+from django.urls import path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import DefaultRouter
 
@@ -10,6 +10,7 @@ from core.views import (
     CommentCreateView,
     CommentDeleteView,
     CommentUpdateView,
+    CreateOrderView,
     DishAPI,
     DishCreateView,
     DishDeleteView,
@@ -20,6 +21,7 @@ from core.views import (
     LikeDishView,
     LoginView,
     OrderAPI,
+    OrderCountdownView,
     OrderItemAPI,
     OrderListView,
     ProfileAPI,
@@ -27,7 +29,6 @@ from core.views import (
     RemoveFromCartView,
     RestaurantAPI,
     UnlikeDishView,
-    create_order,
 )
 
 router = DefaultRouter()
@@ -60,6 +61,7 @@ urlpatterns = [
     path('comment/delete/<int:pk>/', CommentDeleteView.as_view(), name='comment_delete'),
     path('dish/<int:pk>/like/', LikeDishView.as_view(), name='like_dish'),
     path('dish/<int:pk>/unlike/', UnlikeDishView.as_view(), name='unlike_dish'),
-    path('order/', create_order, name='order'),
+    path('order/create', CreateOrderView.as_view(), name='order'),
     path('order/detail/', OrderListView.as_view(), name='order_list'),
+    path('order/countdown/', OrderCountdownView.as_view(), name='order_countdown'),
 ] + router.urls

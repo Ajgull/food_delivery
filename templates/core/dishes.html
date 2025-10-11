@@ -20,7 +20,7 @@
                     {% if request.user.profile.role == 'restaurant' %}
                         <a href="{% url 'dish_create' %}" class="btn btn-outline-primary">Create dish</a>
 
-                    {% elif request.user.profile.role == 'customer' %}
+                    {% elif request.user.profile.role == 'customer' or request.user.profile.role == 'courier' %}
                         <h2 class="h5 mb-0">Hi, customer {{ request.user.username }}</h2>
                         <a href="{% url 'order_list' %}" class="btn btn-outline-primary"> History of orders</a>
 
@@ -55,23 +55,24 @@
 
                 <form method="post" action="{% url 'order' %}" id="order-form">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-primary" id="order-btn">Create order</button>
+                    <button type="submit" class="btn btn-outline-primary">Create order</button>
                 </form>
 
+
                 <script>
-                document.getElementById('order-form').addEventListener('submit', function(event) {
+                document.getElementById('order-btn').addEventListener('click', function() {
                     const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
                     const userRole = "{{ request.user.profile.role|default:'' }}";
 
                     if (!isAuthenticated || userRole !== 'customer') {
-                        event.preventDefault();
                         alert('Please, log in to create order');
+                        return;
                     }
+
+                    window.location.href = "{% url 'order_countdown' %}";
                 });
+
                 </script>
-
-
-
             </div>
         </div>
 

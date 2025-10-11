@@ -33,6 +33,7 @@
 #         message = event["message"]
 #         await self.send(text_data=json.dumps({"message": message}))
 
+import asyncio
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -68,3 +69,13 @@ class SupportConsumer(AsyncWebsocketConsumer):
             return
         message = event['message']
         await self.send(text_data=json.dumps({'message': message}))
+
+
+class OrderConsumer(AsyncWebsocketConsumer):
+    async def connect(self) -> None:
+        await self.accept()
+        for i in range(5, 0, -1):
+            await self.send(text_data=json.dumps({'countdown': i}))
+            await asyncio.sleep(1)
+        await self.send(text_data=json.dumps({'order_created': True}))
+        await self.close()

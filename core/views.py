@@ -1,12 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import QuerySet
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView, View
 from django_filters.views import FilterView
 from rest_framework import viewsets
 
@@ -53,41 +52,45 @@ class LikeAPI(viewsets.ModelViewSet):
     serializer_class = serializers.Like
 
 
-@login_required
-def create_order(request: HttpRequest) -> HttpResponse:
-    profile = Profile.objects.get(user=request.user)
+class OrderCountdownView(TemplateView):
+    template_name = 'core/order_countdown.html'
 
-    cart = request.session.get('cart', {})
-    if cart:
-        first_dish_id = next(iter(cart))
-        first_dish = Dish.objects.get(id=first_dish_id)
-        restaurant = first_dish.restaurant
 
-        order = Order.objects.create(profile=profile, restaurant=restaurant, status='Pending')
+class CreateOrderView(LoginRequiredMixin, View):
+    def post(self, request: HttpRequest) -> HttpResponse:
+        profile = Profile.objects.get(user=request.user)
+        cart = request.session.get('cart', {})
 
-        for dish_id, quantity in cart.items():
-            dish = Dish.objects.get(id=dish_id)
-            OrderItem.objects.create(order=order, dish=dish, quantity=quantity)
+        if cart:
+            first_dish_id = next(iter(cart))
+            first_dish = Dish.objects.get(id=first_dish_id)
+            restaurant = first_dish.restaurant
 
-        del request.session['cart']
-        print(order)
+            order = Order.objects.create(profile=profile, restaurant=restaurant, status='Pending')
 
-        customer_email = profile.email
+            for dish_id, quantity in cart.items():
+                dish = Dish.objects.get(id=dish_id)
+                OrderItem.objects.create(order=order, dish=dish, quantity=quantity)
 
-        subject = f'New Order #{order.id} Created'
+            del request.session['cart']
+            print(order)
 
-        order_items = OrderItem.objects.filter(order=order)
-        items_list = '\n'.join([f'{item.dish.name} x{item.quantity}' for item in order_items])
+            customer_email = profile.email
 
-        message = (
-            f'Hello {profile.first_name}, your order #{order.id} has been received.\n\n'
-            f'Order items:\n{items_list}\n\n'
-            'Thank you for your purchase!'
-        )
+            subject = f'New Order #{order.id} Created'
 
-        email_send.delay(subject, message, [customer_email])
+            order_items = OrderItem.objects.filter(order=order)
+            items_list = '\n'.join([f'{item.dish.name} x{item.quantity}' for item in order_items])
 
-    return redirect('home')
+            message = (
+                f'Hello {profile.first_name}, your order #{order.id} has been received.\n\n'
+                f'Order items:\n{items_list}\n\n'
+                'Thank you for your purchase!'
+            )
+
+            email_send.delay(subject, message, [customer_email])
+
+        return redirect('order_countdown')
 
 
 class LogoutView(View):
@@ -289,13 +292,19 @@ class CommentDeleteView(DeleteView):
         return reverse_lazy('dish_detail', kwargs={'pk': self.object.dish.pk})
 
 
-class OrderListView(ListView):
+class OrderListView(UserPassesTestMixin, ListView):
     model = Order
     template_name = 'core/orders.html'
     context_object_name = 'orders'
 
+    def test_func(self) -> bool:
+        return self.request.user.profile.role == 'customer' or self.request.user.profile.role == 'courier'
+
     def get_queryset(self) -> QuerySet[Order]:
-        return Order.objects.filter(profile__user=self.request.user).order_by('order_date')
+        if self.request.user.profile.role == 'customer':
+            return Order.objects.filter(profile__user=self.request.user).order_by('order_date')
+        else:
+            return Order.objects.all()
 
 
 class LikeDishView(View):

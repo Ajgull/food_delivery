@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Countdown{% endblock %}
+
+{% block content %}
+<h1>Emulation of paying process</h1>
+<p>Redirecting in <span id="countdown">7</span> seconds...</p>
+
+<script>
+    const countdownElem = document.getElementById('countdown');
+    const socket = new WebSocket('ws://' + window.location.host + '/ws/order_countdown/');
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+
+        if (data.countdown !== undefined) {
+            countdownElem.textContent = data.countdown;
+        }
+
+        if (data.order_created) {
+            window.location.href = "{% url 'home' %}";
+        }
+
+        if (data.error) {
+            alert(data.error);
+            window.location.href = "{% url 'home' %}";
+        }
+    };
+
+    socket.onclose = function() {
+        console.log('WebSocket connection closed');
+    };
+</script>
+{% endblock %}
