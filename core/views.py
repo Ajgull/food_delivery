@@ -8,12 +8,49 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView, View
 from django_filters.views import FilterView
+from rest_framework import viewsets
 
+from core import serializers
 from core.cart import Cart
 from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
 from core.models import Comment, Dish, Like, Order, OrderItem, Profile, Restaurant
 from core.tasks import email_send
+
+
+class ProfileAPI(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = serializers.Profile
+
+
+class RestaurantAPI(viewsets.ModelViewSet):
+    queryset = Restaurant.objects.all()
+    serializer_class = serializers.Restaurant
+
+
+class DishAPI(viewsets.ModelViewSet):
+    queryset = Dish.objects.all()
+    serializer_class = serializers.Dish
+
+
+class CommentAPI(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = serializers.Comment
+
+
+class OrderAPI(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = serializers.Order
+
+
+class OrderItemAPI(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = serializers.OrderItem
+
+
+class LikeAPI(viewsets.ModelViewSet):
+    queryset = Like.objects.all()
+    serializer_class = serializers.Like
 
 
 @login_required
