@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'phonenumber_field',
     'bootstrap5',
-    'django_filters',
+    # 'django_filters',
     'channels',
     'rest_framework',
     'drf_spectacular',
