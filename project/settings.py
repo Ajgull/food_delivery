@@ -22,11 +22,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-92o5uw^^(9ffc_#%ui74!==t3yfupl*c*35h6o@6+hpk7a_n8!'
+from dj_database_url import parse as db_url
+from decouple import config
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=False, cast=bool)
+SECRET_KEY = config("SECRET_KEY", default="")
+
+DATABASES = {
+    "default": dict(
+        config("DATABASE_URL", cast=db_url),
+    )
+}
 
 ALLOWED_HOSTS = []
 
@@ -94,17 +100,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
