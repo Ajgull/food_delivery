@@ -29,8 +29,9 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 SECRET_KEY = config("SECRET_KEY", default="")
 
 DATABASES = {
-    "default": config("DATABASE_URL", default="sqlite:///db.sqlite3", cast=db_url)
+    "default": db_url("sqlite:///db.sqlite3")
 }
+
 
 ALLOWED_HOSTS = []
 
