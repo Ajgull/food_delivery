@@ -1,0 +1,30 @@
+name: Django CI
+
+on: [push, pull_request]
+
+jobs:
+  runs_unittests:
+    runs-on:
+      ubuntu-latest
+      strategy:
+        max-parallel: 4
+        matrix:
+          python-version: ['3.14']
+      steps:
+        - name: Checkout reposirory code
+          uses: actions/checkout@v3
+        - name: Load .env variables
+          uses: crazy-max/ghaction-dotenv@v2
+          with:
+          file: .env
+        - name: Set up Python $ {{ matrix.python-version }}
+          uses: actions/setup-python@v4
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Install Dependencies
+          run: |
+            python3 -m pip install --upgrade pip
+            pip install --ignore-installed -r requirements.txt
+        - name: Run Tests
+          run: |
+            pytest
