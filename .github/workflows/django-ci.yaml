@@ -16,7 +16,7 @@ jobs:
       - name: Load .env variables
         uses: crazy-max/ghaction-dotenv@v2
         with:
-        file: .env
+          file: .env
       - name: Set up Python $ {{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
