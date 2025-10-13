@@ -157,6 +157,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_HOST_USER = 'natalisia123@yandex.ru'
-EMAIL_HOST_PASSWORD =  = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
