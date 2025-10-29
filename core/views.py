@@ -57,6 +57,7 @@ class OrderCountdownView(TemplateView):
 
 
 class CreateOrderView(LoginRequiredMixin, View):
+    print('HHHello world')
     def post(self, request: HttpRequest) -> HttpResponse:
         profile = Profile.objects.get(user=request.user)
         cart = request.session.get('cart', {})
