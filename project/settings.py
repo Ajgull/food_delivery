@@ -40,14 +40,22 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 SECRET_KEY = config('SECRET_KEY', default='')
 
 DATABASES = {
+<<<<<<< HEAD
     'default': dict(
         config('DATABASE_URL', cast=db_url),
     )
+=======
+    "default": db_url("sqlite:///db.sqlite3")
+>>>>>>> 0b8df88e168eaf689dc4f0d748eccee202f9425e
 }
+
 
 ALLOWED_HOSTS = []
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0b8df88e168eaf689dc4f0d748eccee202f9425e
 # Application definition
 
 INSTALLED_APPS = [
@@ -61,11 +69,18 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
     'phonenumber_field',
     'bootstrap5',
-    'django_filters',
+    # 'django_filters',
     'channels',
     'rest_framework',
     'drf_spectacular',
 ]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -159,6 +174,10 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_HOST_USER = 'natalisia123@yandex.ru'
+<<<<<<< HEAD
 # EMAIL_HOST_PASSWORD = 'pwqwnfublnzudrgv'
+=======
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+>>>>>>> 0b8df88e168eaf689dc4f0d748eccee202f9425e
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

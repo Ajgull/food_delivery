@@ -6,12 +6,12 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView, View
-from django_filters.views import FilterView
+# from django_filters.views import FilterView
 from rest_framework import viewsets
 
 from core import serializers
 from core.cart import Cart
-from core.filters import DishFilter
+# from core.filters import DishFilter
 from core.forms import UserLoginForm, UserRegistrationForm
 from core.models import Comment, Dish, Like, Order, OrderItem, Profile, Restaurant
 from core.tasks import email_send
@@ -102,11 +102,11 @@ class LogoutView(View):
         return redirect('home')
 
 
-class DishListView(FilterView):
+class DishListView(ListView):
     model = Dish
     template_name = 'core/dishes.html'
     context_object_name = 'dishes'
-    filterset_class = DishFilter
+    # filterset_class = DishFilter
 
     def get_context_data(self, **kwargs: str) -> HttpResponse:
         context = super().get_context_data(**kwargs)
