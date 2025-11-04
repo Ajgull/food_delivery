@@ -22,21 +22,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-from dj_database_url import parse as db_url
-from decouple import config
 
-DEBUG = config("DEBUG", default=False, cast=bool)
-SECRET_KEY = config("SECRET_KEY", default="")
+# DEBUG = True
+# SECRET_KEY = 'django-insecure-92o5uw^^(9ffc_#%ui74!==t3yfupl*c*35h6o@6+hpk7a_n8!'
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+from decouple import config
+from dj_database_url import parse as db_url
+
+DEBUG = config('DEBUG', default=False, cast=bool)
+SECRET_KEY = config('SECRET_KEY', default='')
 
 DATABASES = {
-    "default": dict(
-        config("DATABASE_URL", cast=db_url),
+    'default': dict(
+        config('DATABASE_URL', cast=db_url),
     )
 }
 
 ALLOWED_HOSTS = []
-
-
 
 
 # Application definition
@@ -150,6 +159,6 @@ CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_HOST_USER = 'natalisia123@yandex.ru'
-EMAIL_HOST_PASSWORD = 'benwdzjqdspzgjgt'
+# EMAIL_HOST_PASSWORD = 'pwqwnfublnzudrgv'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

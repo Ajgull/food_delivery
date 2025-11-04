@@ -56,7 +56,10 @@ class OrderCountdownView(TemplateView):
     template_name = 'core/order_countdown.html'
 
 
-class CreateOrderView(LoginRequiredMixin, View):
+class CreateOrderView(UserPassesTestMixin, View):
+    def test_func(self) -> bool:
+        return self.request.user.profile.role == 'customer'
+
     def post(self, request: HttpRequest) -> HttpResponse:
         profile = Profile.objects.get(user=request.user)
         cart = request.session.get('cart', {})
